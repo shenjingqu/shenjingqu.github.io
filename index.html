@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1:64 小车收藏馆 | shenjingqu.xyz</title>
+<style>
+/* 全局重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+body {
+  background: linear-gradient(120deg, #f7f8fc 0%, #eef1f9 100%);
+  min-height: 100vh;
+  padding: 44px 28px;
+}
+.container {
+  max-width: 1520px;
+  margin: 0 auto;
+}
+
+/* 区域1：4个持有人分类卡片 */
+.owner-section {
+  margin-bottom: 64px;
+}
+.section-subtitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #232a3b;
+  margin-bottom: 26px;
+}
+.owner-card-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+.owner-card {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 36px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(80, 105, 155, 0.06);
+}
+.owner-card:hover {
+  transform: translateY(-7px);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 34px rgba(80, 105, 155, 0.11);
+}
+.owner-card.active {
+  border-color: #7295d8;
+  background: rgba(114, 149, 216, 0.12);
+}
+.owner-name {
+  font-size: 21px;
+  font-weight: 800;
+  color: #1f2738;
+  margin-bottom: 9px;
+}
+.owner-desc {
+  font-size: 14px;
+  font-weight: 500;
+  color: #616c84;
+}
+
+/* 主体左右布局 */
+.main-content {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+}
+
+/* 左侧二级分类栏 */
+.filter-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(14px);
+  border-radius: 18px;
+  padding: 28px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+.filter-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #232a3b;
+  margin-bottom: 22px;
+}
+.filter-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 13px 16px;
+  margin-bottom: 11px;
+  border-radius: 13px;
+  border: none;
+  background: transparent;
+  color: #424d63;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.24s ease;
+}
+.filter-btn:hover {
+  background: rgba(114, 149, 216, 0.09);
+}
+.filter-btn.active {
+  background: #7295d8;
+  color: #fff;
+}
+
+/* 右侧横向滚动小车画廊（中间放大两边缩小） */
+.car-gallery-wrap {
+  flex: 1;
+  overflow: hidden;
+}
+.scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 46px 0;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+/* 隐藏原生滚动条美化 */
+.scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(114, 149, 216, 0.07);
+  border-radius: 10px;
+}
+.scroll-container::-webkit-scrollbar-thumb {
+  background: #b3c6e6;
+  border-radius: 10px;
+}
+.car-track {
+  display: flex;
+  gap: 28px;
+  padding: 0 calc(50% - 165px);
+}
+.car-card {
+  width: 330px;
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  transition: transform 0.36s ease;
+  box-shadow: 0 8px 26px rgba(80, 105, 155, 0.05);
+}
+.car-img-box {
+  width: 100%;
+  height: 240px;
+}
+.car-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.car-text-area {
+  padding: 22px;
+}
+.car-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7295d8;
+  background: rgba(114, 149, 216, 0.11);
+  padding: 4px 11px;
+  border-radius: 7px;
+  margin-bottom: 11px;
+}
+.car-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1f2738;
+}
+
+/* 详情弹窗 */
+.detail-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 28, 42, 0.78);
+  backdrop-filter: blur(10px);
+  display: none;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.modal-close {
+  position: absolute;
+  top: 30px;
+  right: 36px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+.modal-content {
+  width: min(1120px, 100%);
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  gap: 34px;
+  padding: 34px;
+}
+.modal-img-box {
+  width: 56%;
+}
+.modal-main-img {
+  width: 100%;
+  height: 440px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.modal-info-box {
+  flex: 1;
+}
+.modal-car-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #1f2738;
+  margin-bottom: 14px;
+}
+.modal-desc {
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #505b70;
+  font-weight: 500;
+}
+
+/* 移动端适配 */
+@media (max-width: 1080px) {
+  .owner-card-wrap {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .main-content {
+    flex-direction: column;
+  }
+  .filter-sidebar {
+    width: 100%;
+  }
+  .modal-content {
+    flex-direction: column;
+  }
+  .modal-img-box {
+    width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  .owner-card-wrap {
+    grid-template-columns: 1fr;
+  }
+  .car-card {
+    width: 270px;
+  }
+  .car-track {
+    padding: 0 calc(50% - 135px);
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- 区域1：4人分类卡片 -->
+  <section class="owner-section">
+    <h2 class="section-subtitle">选择收藏持有人</h2>
+    <div class="owner-card-wrap">
+      <div class="owner-card" data-owner="user1">
+        <div class="owner-name">sjq的车库</div>
+        <div class="owner-desc">MiniGT 日系跑车收藏</div>
+      </div>
+      <div class="owner-card" data-owner="user2">
+        <div class="owner-name">zmz的车库</div>
+        <div class="owner-desc">风火轮限定超跑系列</div>
+      </div>
+      <div class="owner-card" data-owner="user3">
+        <div class="owner-name">wsz的车库</div>
+        <div class="owner-desc">拓意国产商用车/军模</div>
+      </div>
+      <div class="owner-card active" data-owner="user4">
+        <div class="owner-name">yyj的车库</div>
+        <div class="owner-desc">全部私人1:64藏品</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 主体区域：左侧二级分类 + 右侧横向滚轮画廊 -->
+  <div class="main-content">
+    <!-- 左侧二级筛选 -->
+    <aside class="filter-sidebar">
+      <h3 class="filter-title">车型分类</h3>
+      <button class="filter-btn active" data-type="all">全部车型</button>
+      <button class="filter-btn" data-type="minigt">Mini GT</button>
+      <button class="filter-btn" data-type="tomica">多美卡 Tomica</button>
+      <button class="filter-btn" data-type="hotwheels">风火轮 HotWheels</button>
+      <button class="filter-btn" data-type="tuoyi">拓意</button>
+      <button class="filter-btn" data-type="limited">绝版限定款</button>
+    </aside>
+
+    <!-- 右侧横向滚动小车画廊 -->
+    <div class="car-gallery-wrap">
+      <div class="scroll-container" id="scrollWrap">
+        <div class="car-track" id="carTrackList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 小车详情弹窗 -->
+<div class="detail-modal" id="detailModal">
+  <button class="modal-close" id="closeModalBtn">×</button>
+  <div class="modal-content">
+    <div class="modal-img-box">
+      <img class="modal-main-img" id="modalPreviewImg" alt="车模实拍">
+    </div>
+    <div class="modal-info-box">
+      <h2 class="modal-car-title" id="modalCarTitle"></h2>
+      <span class="car-tag" id="modalCarTag"></span>
+      <p class="modal-desc" id="modalCarText"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== 车辆配置区（4人，每人5台，共20台） =====================
+// 图片统一上传仓库 cars 文件夹，img填图片文件名
+// user1 = sjq | user2 = zmz | user3 = wsz | user4 = yyj
+// type取值：minigt / tomica / hotwheels / tuoyi / limited
+const carList = [
+  // ========== sjq的车库 user1（5台） ==========
+  {img:"car01.jpg",owner:"user1",type:"minigt",tag:"MINI GT",name:"本田 NSX 初代",desc:"哑光白配色，独立可动尾翼，日系经典跑车收藏。"},
+  {img:"car02.jpg",owner:"user1",type:"minigt",tag:"MINI GT",name:"马自达 RX-7 FD3S",desc:"原厂红色涂装，转子引擎经典车型，漆面细腻无掉漆。"},
+  {img:"car03.jpg",owner:"user1",type:"minigt",tag:"MINI GT",name:"三菱 Lancer Evo IX",desc:"拉力赛车配色，胶胎金属底盘，日系性能车代表。"},
+  {img:"car04.jpg",owner:"user1",type:"tomica",tag:"TOMICA",name:"日产 350Z",desc:"红白盒可开盖款，性价比高，日常把玩首选。"},
+  {img:"car05.jpg",owner:"user1",type:"limited",tag:"绝版限定款",name:"丰田 AE86 豆腐店涂装",desc:"头文字D联名限定，包装完整收藏款。"},
+
+  // ========== zmz的车库 user2（5台） ==========
+  {img:"car06.jpg",owner:"user2",type:"hotwheels",tag:"HotWheels",name:"保时捷 911 Turbo S",desc:"超跑收藏系列，金属底盘，加宽胶胎。"},
+  {img:"car07.jpg",owner:"user2",type:"hotwheels",tag:"HotWheels",name:"兰博基尼 Huracan",desc:"哑光绿限定涂装，线条还原实车空气动力学套件。"},
+  {img:"car08.jpg",owner:"user2",type:"hotwheels",tag:"HotWheels",name:"雪佛兰 Corvette C8",desc:"中置引擎超跑，低趴车身，赛道配色。"},
+  {img:"car09.jpg",owner:"user2",type:"limited",tag:"绝版限定款",name:"布加迪 Chiron 金色限量",desc:"全球少量发行，礼盒独立包装。"},
+  {img:"car10.jpg",owner:"user2",type:"hotwheels",tag:"HotWheels",name:"奔驰 AMG GT Black Series",desc:"赛道化改装套件，尾翼可微调角度。"},
+
+  // ========== wsz的车库 user3（5台） ==========
+  {img:"car11.jpg",owner:"user3",type:"tuoyi",tag:"拓意",name:"解放老式军用卡车",desc:"国产军模系列，还原老式运输卡车细节。"},
+  {img:"car12.jpg",owner:"user3",type:"tuoyi",tag:"拓意",name:"北京212越野车",desc:"复古军绿色，可拆卸顶棚，国产情怀车型。"},
+  {img:"car13.jpg",owner:"user3",type:"tuoyi",tag:"拓意",name:"五菱宏光面包车",desc:"国民神车，多配色可选，细节还原内饰。"},
+  {img:"car14.jpg",owner:"user3",type:"tuoyi",tag:"拓意",name:"东风140货运卡车",desc:"老式货运车型，货斗可拆卸，金属车身。"},
+  {img:"car15.jpg",owner:"user3",type:"limited",tag:"绝版限定款",name:"红旗L5 礼宾车",desc:"国产高端礼宾车限定模型，收藏价值高。"},
+
+  // ========== yyj的车库 user4（5台） ==========
+  {img:"car16.jpg",owner:"user4",type:"minigt",tag:"MINI GT",name:"日产 Skyline GT-R R34",desc:"哑光金属灰原厂无改装，轮毂细节精细，线下实体店购入。"},
+  {img:"car17.jpg",owner:"user4",type:"tomica",tag:"TOMICA",name:"丰田 Supra MK4",desc:"多美卡红白盒常规款，引擎盖可开合，价格亲民。"},
+  {img:"car18.jpg",owner:"user4",type:"minigt",tag:"MINI GT",name:"宝马 M4 Competition",desc:"水泥灰金属漆，宽体套件，德系性能跑车。"},
+  {img:"car19.jpg",owner:"user4",type:"hotwheels",tag:"HotWheels",name:"奥迪 R8 V10 Plus",desc:"银色镜面漆面，透明发动机盖。"},
+  {img:"car20.jpg",owner:"user4",type:"limited",tag:"绝版限定款",name:"法拉利 F40 经典红",desc:"90年代传奇超跑，限量复刻收藏模型。"},
+];
+// =============================================================================
+
+let activeOwner = "user4";
+let activeType = "all";
+const scrollWrap = document.getElementById("scrollWrap");
+const trackDom = document.getElementById("carTrackList");
+
+// 自动渲染全部小车卡片
+function renderCars(){
+  trackDom.innerHTML = "";
+  carList.forEach(car=>{
+    const card = document.createElement("div");
+    card.className = "car-card";
+    card.dataset.owner = car.owner;
+    card.dataset.type = car.type;
+    card.dataset.img = `cars/${car.img}`;
+    card.dataset.title = car.name;
+    card.dataset.text = car.desc;
+    card.innerHTML = `
+      <div class="car-img-box">
+        <img class="car-img" src="cars/${car.img}" alt="${car.name}">
+      </div>
+      <div class="car-text-area">
+        <span class="car-tag">${car.tag}</span>
+        <h4 class="car-name">${car.name}</h4>
+      </div>
+    `;
+    trackDom.appendChild(card);
+  })
+  filterCarList();
+  setTimeout(updateCarScale, 100);
+}
+
+// 顶部持有人切换逻辑
+document.querySelectorAll(".owner-card").forEach(card=>{
+  card.onclick = ()=>{
+    document.querySelectorAll(".owner-card").forEach(c=>c.classList.remove("active"));
+    card.classList.add("active");
+    activeOwner = card.dataset.owner;
+    filterCarList();
+  }
+})
+
+// 左侧车型分类切换
+document.querySelectorAll(".filter-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    activeType = btn.dataset.type;
+    filterCarList();
+  }
+})
+
+// 双重筛选（持有人+车型）
+function filterCarList(){
+  document.querySelectorAll(".car-card").forEach(card=>{
+    const ownerMatch = card.dataset.owner === activeOwner;
+    const typeMatch = activeType === "all" || card.dataset.type === activeType;
+    card.style.display = ownerMatch && typeMatch ? "flex" : "none";
+  })
+}
+
+// 横向滚动视差缩放（中间放大、两侧缩小）
+function updateCarScale(){
+  const wrapRect = scrollWrap.getBoundingClientRect();
+  const wrapCenterX = wrapRect.left + wrapRect.width / 2;
+  document.querySelectorAll(".car-card").forEach(card => {
+    if (card.style.display === "none") return;
+    const cardRect = card.getBoundingClientRect();
+    const cardCenterX = cardRect.left + cardRect.width / 2;
+    const distance = Math.abs(cardCenterX - wrapCenterX);
+    const maxDistance = wrapRect.width / 2;
+    const scaleValue = Math.max(0.7, 1 - (distance / maxDistance) * 0.3);
+    card.style.transform = `scale(${scaleValue})`;
+  })
+}
+scrollWrap.addEventListener("scroll", updateCarScale);
+window.addEventListener("resize", updateCarScale);
+
+// 详情弹窗逻辑
+const modal = document.getElementById("detailModal");
+const closeBtn = document.getElementById("closeModalBtn");
+const mImg = document.getElementById("modalPreviewImg");
+const mTitle = document.getElementById("modalCarTitle");
+const mTag = document.getElementById("modalCarTag");
+const mText = document.getElementById("modalCarText");
+
+trackDom.addEventListener("click",(e)=>{
+  const card = e.target.closest(".car-card");
+  if(!card) return;
+  mImg.src = card.dataset.img;
+  mTitle.innerText = card.dataset.title;
+  mTag.innerText = card.querySelector(".car-tag").innerText;
+  mText.innerText = card.dataset.text;
+  modal.style.display = "flex";
+})
+closeBtn.onclick = ()=> modal.style.display = "none";
+modal.onclick = (e)=>{if(e.target === modal) modal.style.display = "none"}
+
+window.onload = ()=>{
+  renderCars();
+}
+</script>
+</body>
+</html>
