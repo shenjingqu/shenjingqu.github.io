@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面走丢了 | 1:64 车模收藏馆</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="navMount"></div>
+  <main class="hero">
+    <div class="hero-copy">
+      <div class="kicker">404</div>
+      <h1>这台车暂时没入库</h1>
+      <div class="hero-actions">
+        <a class="link" href="index.html">返回收藏馆</a>
+        <a class="link" href="wishlist.html">看看愿望清单</a>
+      </div>
+    </div>
+    <div class="hero-slide is-active">
+      <img src="cars/hero-red-car.png" alt="红色车模">
+    </div>
+  </main>
+  <script src="data/cars.js"></script>
+  <script src="js/common.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("navMount").innerHTML = createNav();
+      setupTheme();
+      setupPageTransition();
+    });
+  </script>
+</body>
+</html>

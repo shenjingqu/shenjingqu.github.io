@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>收藏统计 | 1:64 车模收藏馆</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="navMount"></div>
+  <main class="page-shell">
+    <h1 class="page-title" data-reveal>收藏数据统计</h1>
+    <section class="stats-grid" id="summaryGrid"></section>
+    <section class="chart-panel" data-reveal>
+      <canvas id="brandChart" height="120" aria-label="品牌藏品数量饼图"></canvas>
+    </section>
+    <section class="chart-panel" data-reveal>
+      <canvas id="ownerChart" height="120" aria-label="车库藏品数量柱状图"></canvas>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="data/cars.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/stats.js"></script>
+</body>
+</html>
